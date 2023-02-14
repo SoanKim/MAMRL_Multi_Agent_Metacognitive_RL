@@ -4,19 +4,15 @@ import torch
 from collections import Counter
 import torch.utils.data as data
 
+
 class TripletDataset(data.Dataset):
 
     def __init__(self, n_prb, starting_idx, ending_idx):
         super(TripletDataset, self).__init__()
-        self.labels = None
-        self.env = None
         self.n_prb = n_prb
-        self.starting_idx = starting_idx
-        self.ending_idx = ending_idx
+        self.starting_idx = int(starting_idx)
+        self.ending_idx = int(ending_idx)
 
-    def generate_env(self):
-
-        # Making problems
         problem_mat = np.zeros((self.n_prb, 5, 4))
         answer_attribute = []
         non_answer_attribute = []
@@ -68,25 +64,21 @@ class TripletDataset(data.Dataset):
                     one_hot_attribute = np.eye(3, dtype=np.int32)[arr].flatten()
                     one_hot_problem_mat[prb, card, :] = one_hot_attribute
 
+        print(one_hot_problem_mat.shape)
         env = torch.Tensor(one_hot_problem_mat)
         labels = torch.Tensor(answer_li)
 
-        env = env[self.starting_idx:self.ending_idx]
-        labels = labels[self.starting_idx:self.ending_idx]
+        self.env = env[self.starting_idx:self.ending_idx, :, :]
+        self.labels = labels[self.starting_idx:self.ending_idx]
 
-        self.env = env
-        self.labels = labels
+    def __len__(self):
+        return self.size
 
-        return self.env, self.labels
+    def __getitem__(self, idx):
+        if torch.is_tensor(idx):
+            idx = idx.tolist()
 
-        def __len__(self):
-            return self.size
+        states = self.env[idx]
+        labels = self.labels[idx]
 
-        def __getitem__(self, idx):
-            if torch.is_tensor(idx):
-                idx = idx.tolist()
-
-        state = self.env[idx]
-        label = self.labels[idx]
-
-        return state, label
+        return states, labels
