@@ -38,6 +38,7 @@ class TripletDataset(data.Dataset):
 
         # Checking Duplicates
         combi = list(itertools.combinations(list(range(5)), 3))
+
         duplicated = []
         for prb in range(self.n_prb):
             candidates = []
@@ -53,18 +54,25 @@ class TripletDataset(data.Dataset):
                 duplicated.append(prb)
 
         problem_mat = np.delete(problem_mat, duplicated, axis=0)
-        answer_li = [elem for i, elem in enumerate(answer_li) if i not in duplicated]
+
+        # Make scalar answers
+        combi_li = []
+
+        for i in list(combi):
+            combi_li.append(tuple(i))
+        combi_dic = dict(zip(combi_li, list(range(10))))
+
+        answer_li = [combi_dic[elem] for i, elem in enumerate(answer_li) if i not in duplicated]
 
         # One-Hot
-        one_hot_problem_mat = np.zeros((problem_mat.shape[0], 5, 12))
+        one_hot_problem_mat = np.zeros((problem_mat.shape[0], 5, 4, 3))
         for prb in range(problem_mat.shape[0]):
             for card in range(5):
                 for attribute in range(4):
                     arr = np.array(problem_mat[prb, card].astype(int))
-                    one_hot_attribute = np.eye(3, dtype=np.int32)[arr].flatten()
+                    one_hot_attribute = np.eye(3, dtype=np.int32)[arr]
                     one_hot_problem_mat[prb, card, :] = one_hot_attribute
 
-        print(one_hot_problem_mat.shape)
         env = torch.Tensor(one_hot_problem_mat)
         labels = torch.Tensor(answer_li)
 
@@ -72,13 +80,13 @@ class TripletDataset(data.Dataset):
         self.labels = labels[self.starting_idx:self.ending_idx]
 
     def __len__(self):
-        return self.size
+        return len(self.labels)
 
     def __getitem__(self, idx):
         if torch.is_tensor(idx):
             idx = idx.tolist()
 
-        states = self.env[idx]
-        labels = self.labels[idx]
+        states = self.env[idx].type(torch.int64)
+        labels = self.labels[idx].type(torch.int64)
 
         return states, labels
