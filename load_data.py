@@ -26,16 +26,13 @@ test_loader = data.DataLoader(TripletDataset(n_prb, test_starting_idx, test_endi
                               batch_size=10, shuffle=False, drop_last=True, pin_memory=True)
 
 
-import PIL
+
 import numpy as np
 import matplotlib.pyplot as plt
 
 # Load sample image
 from PIL import Image
-from matplotlib import cm
-import torchvision.transforms as T
-from skimage import io
-import torchvision
+
 data = TripletDataset(10, 0, 2)
 print("data", data[0][0])
 print("answer", data[0][1])
@@ -50,14 +47,6 @@ for i, each_card in enumerate(data[0][0]):
     plt.matshow(img)
     plt.title(str(i))
     plt.show()
-
-
-    # image = torchvision.transforms.ToPILImage()(each_card.unsqueeze(0))
-    # return_image = io.BytesIO()
-    # image.save(return_image, "JPEG")
-    # return_image.seek(0)
-
-
 
 
 
