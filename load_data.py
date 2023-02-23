@@ -8,13 +8,13 @@ validate_ratio = 0.3
 test_ratio = 0.2
 
 train_starting_idx = 0
-train_ending_idx = 9 * train_ratio
+train_ending_idx = n_prb*0.9 * train_ratio
 
 validate_starting_idx = train_ending_idx
-validate_ending_idx = 9 * (train_ratio + validate_ratio)
+validate_ending_idx = n_prb*0.9 * (train_ratio + validate_ratio)
 
 test_starting_idx = validate_ending_idx
-test_ending_idx = 9
+test_ending_idx = n_prb*0.9
 
 train_loader = data.DataLoader(TripletDataset(n_prb, train_starting_idx, train_ending_idx),
                                batch_size=10, shuffle=False, drop_last=True, pin_memory=True)
@@ -24,7 +24,4 @@ val_loader = data.DataLoader(TripletDataset(n_prb, validate_starting_idx, valida
 
 test_loader = data.DataLoader(TripletDataset(n_prb, test_starting_idx, test_ending_idx),
                               batch_size=10, shuffle=False, drop_last=True, pin_memory=True)
-
-
-
 
