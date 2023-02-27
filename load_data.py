@@ -1,27 +1,27 @@
 import torch.utils.data as data
 from environment import TripletDataset
+import os
+import glob
+import torch
 
-# Generate stimuli
-n_prb = 10
-train_ratio = 0.5
-validate_ratio = 0.3
-test_ratio = 0.2
+saving_dir = os.path.join(os.getcwd())
 
-train_starting_idx = 0
-train_ending_idx = n_prb*0.9 * train_ratio
+train_data = glob.glob(os.path.join(os.getcwd(), "img_data", "*train.png"))
+train_loader = torch.utils.data.DataLoader(train_data)
 
-validate_starting_idx = train_ending_idx
-validate_ending_idx = n_prb*0.9 * (train_ratio + validate_ratio)
+val_data = glob.glob(os.path.join(os.getcwd(), "img_data", "*validation.png"))
+val_loader = torch.utils.data.DataLoader(val_data)
 
-test_starting_idx = validate_ending_idx
-test_ending_idx = n_prb*0.9
+test_data = glob.glob(os.path.join(os.getcwd(), "img_data", "*test.png"))
+test_loader = torch.utils.data.DataLoader(test_data)
 
-train_loader = data.DataLoader(TripletDataset(n_prb, train_starting_idx, train_ending_idx),
-                               batch_size=10, shuffle=False, drop_last=True, pin_memory=True)
-
-val_loader = data.DataLoader(TripletDataset(n_prb, validate_starting_idx, validate_ending_idx),
-                             batch_size=10, shuffle=False, drop_last=True, pin_memory=True)
-
-test_loader = data.DataLoader(TripletDataset(n_prb, test_starting_idx, test_ending_idx),
-                              batch_size=10, shuffle=False, drop_last=True, pin_memory=True)
+# Text Version
+# train_loader = data.DataLoader(TripletDataset(n_prb, train_starting_idx, train_ending_idx),
+#                                batch_size=10, shuffle=False, drop_last=True, pin_memory=True)
+#
+# val_loader = data.DataLoader(TripletDataset(n_prb, validate_starting_idx, validate_ending_idx),
+#                              batch_size=10, shuffle=False, drop_last=True, pin_memory=True)
+#
+# test_loader = data.DataLoader(TripletDataset(n_prb, test_starting_idx, test_ending_idx),
+#                               batch_size=10, shuffle=False, drop_last=True, pin_memory=True)
 
